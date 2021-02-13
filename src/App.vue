@@ -2,31 +2,44 @@
   <div class="container">
     <form class="form" @submit.prevent="onSubmit">
       <div class="form__content">
-      <div class="form-container">
-        <label class="form-container__label" for="author">author:</label>
-        <input
-          class="form-container__input"
-          v-model="author"
-          id="author"
-          type="text"
-          placeholder="author"
-        >
-      </div>
+        <!-- AUTHOR -->
+        <div class="form-container">
+          <label class="form-container__label" for="author">author:</label>
+          <input
+            class="form-container__input"
+            v-model="author"
+            id="author"
+            type="text"
+            placeholder="Auteur"
+          />
+        </div>
 
-      <div class="form-container">
-        <label class="form-container__label" for="citation">Citation:</label>
-        <input
-          class="form-container__input"
-          v-model="quote"
-          id="citation"
-          type="text"
-          placeholder="citation"
-        >
-      </div>
+        <!-- QUOTE -->
+        <div class="form-container">
+          <label class="form-container__label" for="quote">Citation:</label>
+          <input
+            class="form-container__input"
+            v-model="quote"
+            id="quote"
+            type="text"
+            placeholder="Citation"
+          />
+        </div>
 
-      <button class="button" type="submit">
-        Go
-      </button>
+        <!-- CHARACTER -->
+        <div class="form-container">
+          <label class="form-container__label" for="character">Personnage:</label>
+          <select v-model="character" name="character" id="character">
+            <option value="Écochon">Écochon</option>
+            <option value="Mentalion">Mentalion</option>
+            <option value="Finourson">Finourson</option>
+          </select>
+        </div>
+
+        <!-- SUBMIT -->
+        <button class="button" type="submit">
+          Go
+        </button>
       </div>
     </form>
 
@@ -38,15 +51,21 @@
 </template>
 
 <script>
+import { saveAs } from 'file-saver';
+import { generateTextFile } from './utils/file';
+
 export default {
   name: 'App',
   data: () => ({
     author: '',
     quote: '',
+    character: '',
   }),
   methods: {
     onSubmit() {
-      console.log('🔥');
+      const { content, title } = generateTextFile(this.character, this.quote, this.author);
+
+      saveAs(content, title);
     },
   },
 };
