@@ -53,7 +53,7 @@
 <script>
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
-import { generateTextFile } from './utils/file';
+import { generateTextFile, generateJpgFile } from './utils/file';
 
 export default {
   name: 'App',
@@ -65,18 +65,25 @@ export default {
   }),
   methods: {
     onSubmit() {
-      const { content, titleTxt, titleJpg } = generateTextFile(
+      // Generate text file
+      const textFile = generateTextFile(
         this.character,
         this.quote,
         this.author,
       );
 
-      saveAs(content, titleTxt);
-      const result = document.getElementById('result');
+      saveAs(textFile.content, textFile.title);
 
-      html2canvas(result)
+      // Generate Jpg file
+      html2canvas(document.getElementById('result'))
         .then((canvas) => {
-          saveAs(canvas.toDataURL(), titleJpg);
+          const jpgFile = generateJpgFile(
+            this.character,
+            this.quote,
+            canvas,
+          );
+
+          saveAs(jpgFile.content, jpgFile.title);
         });
     },
   },
