@@ -43,14 +43,15 @@
       </div>
     </form>
 
-    <div class="result">
-      <span class="result__quote">{{ quote }}</span>
+    <div id="result" class="result">
+      <h1 class="result__quote">{{ quote }}</h1>
       <span class="result__author">{{ author }}</span>
     </div>
   </div>
 </template>
 
 <script>
+import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
 import { generateTextFile } from './utils/file';
 
@@ -60,12 +61,23 @@ export default {
     author: '',
     quote: '',
     character: '',
+
   }),
   methods: {
     onSubmit() {
-      const { content, title } = generateTextFile(this.character, this.quote, this.author);
+      const { content, titleTxt, titleJpg } = generateTextFile(
+        this.character,
+        this.quote,
+        this.author,
+      );
 
-      saveAs(content, title);
+      saveAs(content, titleTxt);
+      const result = document.getElementById('result');
+
+      html2canvas(result)
+        .then((canvas) => {
+          saveAs(canvas.toDataURL(), titleJpg);
+        });
     },
   },
 };
