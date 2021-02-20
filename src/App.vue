@@ -43,9 +43,24 @@
       </div>
     </form>
 
-    <div id="result" class="result">
-      <h1 class="result__quote">{{ quote }}</h1>
-      <span class="result__author">{{ author }}</span>
+    <!-- RESULT -->
+    <div id="js-result" class="result">
+      <div class='toto'>
+        <div class="result__header">
+          <div class="result__character-container">
+            <img class="result__character" src="./assets/characters/mentalion.svg"/>
+            <img class="result__type" src="./assets/type/quote.svg">
+          </div>
+          <div class="result__title-container">
+            <h3 class="result__title">Les citations de Mentalion</h3>
+            <h3 class="result__job">Le Coach Mental</h3>
+          </div>
+        </div>
+        <div class="result__quote-container">
+          <h1 class="result__quote">{{ quote }}</h1>
+          <span class="result__author">{{ author }}</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -58,8 +73,8 @@ import { generateTextFile, generateJpgFile } from './utils/file';
 export default {
   name: 'App',
   data: () => ({
-    author: '',
-    quote: '',
+    author: 'Lorem ipsum',
+    quote: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempus aliquet.',
     character: '',
 
   }),
@@ -75,7 +90,7 @@ export default {
       saveAs(textFile.content, textFile.title);
 
       // Generate Jpg file
-      html2canvas(document.getElementById('result'))
+      html2canvas(document.getElementById('js-result')) // use ref
         .then((canvas) => {
           const jpgFile = generateJpgFile(
             this.character,
@@ -127,9 +142,79 @@ export default {
 
 // result compoment
 .result {
+  width: 1000px;
+  height: 1000px;
+  background-color: lightcoral;
+  padding: 30px;
+  position:relative;
+
+  .toto {
+    height: 100%; 
+    background-color: white;
+    border: 20px solid orange;
+  }
+
+  // Header
+  &__header {
+    display:flex;
+    align-items: center;
+  }
+
+  // Character
+  &__character-container {
+    position:relative;
+  }
+
+  &__character  {
+    width:160px;
+    height:160px;
+  }
+
+  &__type {
+    position: absolute;
+    top: -28%;
+    right: -30%;
+    width: 80px;
+    height: 80px;
+  }
+
+  // Title
+  &__title-container{
+    margin-left:25px;
+  }
+
+  &__title,
+  &__job {
+    font-variant: small-caps;
+    letter-spacing: -0,02em;
+    margin: 0;
+    line-height: 30px;
+    font-weight: 700;
+  }
+
+  &__title {
+    font-size: 35px;
+  }
+
+  &__job {
+    font-size: 25px;
+  }
+
+  // Content
   &__quote,
   &__author {
     display:block;
+    // line-height: 30px;
+    margin: 0;
+    font-weight: 700;
+  }
+
+  &__quote {
+    text-align:center;
+  }
+
+  &__author {
+    text-align:right;
   }
 }
 
