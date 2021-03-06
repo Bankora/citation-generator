@@ -30,6 +30,7 @@
         <div class="form-container">
           <label class="form-container__label" for="character">Personnage:</label>
           <select @input="onCharaterChange" name="character" id="character">
+            <!-- @refactor: transformer ces 3 options en options dynamique  -->
             <option value="ecochon">Écochon</option>
             <option value="mentalion">Mentalion</option>
             <option value="finourson">Finourson</option>
@@ -45,24 +46,33 @@
 
     <!-- RESULT -->
     <div
-      id="js-result"
       class="result"
       :class="characterClassModifier"
+      ref="result"
     >
-      <div class='result__container'>
-        <div class="result__header">
-          <div class="result__character-container">
-            <img class="result__character" :src="characterSelected.img"/>
-            <img class="result__type" src="./assets/type/quote.svg">
+      <div class="result__container__border">
+        <div class='result__container'>
+          <div class="result__header">
+            <div class="result__character-container">
+              <img class="result__character" :src="characterSelected.img"/>
+              <img class="result__type" src="./assets/type/quote.svg">
+            </div>
+            <div class="result__title-container">
+              <h3 class="result__title">{{characterSelected.title}}</h3>
+              <h3 class="result__job">{{characterSelected.job}}</h3>
+            </div>
           </div>
-          <div class="result__title-container">
-            <h3 class="result__title">{{characterSelected.title}}</h3>
-            <h3 class="result__job">{{characterSelected.job}}</h3>
+          <div class="result__quote-container">
+            <p
+              class="result__quote"
+              v-html="quote"
+              ref="resultQuote"
+            />
+            <span class="result__author">{{ author }}</span>
           </div>
-        </div>
-        <div class="result__quote-container">
-          <p class="result__quote" v-html="quote" />
-          <span class="result__author">{{ author }}</span>
+          <div class="result__footer">
+            <img class="result__footer-logo" src="./assets/bankora-logo.svg" />
+          </div>
         </div>
       </div>
     </div>
@@ -96,18 +106,18 @@ export default {
       // Generate text file
       const textFile = generateTextFile(
         this.characterSelected.id,
-        this.quote,
+        this.$refs.resultQuote.textContent,
         this.author,
       );
 
       saveAs(textFile.content, textFile.title);
 
       // Generate Jpg file
-      html2canvas(document.getElementById('js-result')) // use ref
+      html2canvas(this.$refs.result)
         .then((canvas) => {
           const jpgFile = generateJpgFile(
             this.characterSelected.id,
-            this.quote,
+            this.author,
             canvas,
           );
 
@@ -115,18 +125,42 @@ export default {
         });
     },
   },
+  mounted() {
+    document.onkeyup = (e) => {
+      const CtrlM = e.ctrlKey && e.key === 'm';
+      const CtrlN = e.ctrlKey && e.key === 'n';
+
+      // primary color on CTRL + M
+      if (CtrlM) {
+        this.quote = this.quote.replace(
+          window.getSelection().toString(),
+          `<span class="result__color-primary">${window.getSelection().toString()}</span>`,
+        );
+        return;
+      }
+
+      // secondary color  on CTRL + N
+      if (CtrlN) {
+        this.quote = this.quote.replace(
+          window.getSelection().toString(),
+          `<span class="result__color-secondary">${window.getSelection().toString()}</span>`,
+        );
+      }
+    };
+  },
 };
 </script>
 
 <style lang="scss">
 // form compoment
 .form {
-  width: 30%;
+  width: 40%;
 
   &__content {
-    width:300px;
+    width: 450px;
     text-align: right;
-    margin:auto;
+    margin-left: auto;
+    margin-right: 20px;
   }
 }
 
@@ -164,7 +198,9 @@ export default {
   background-color: var(--background-color);
   padding: 30px;
   position: relative;
+  transition: ease-in-out all 200ms;
 
+  // .result--ecochon
   &--ecochon {
     --color-primary: var(--ecochon-primary);
     --color-secondary: var(--ecochon-secondary);
@@ -186,21 +222,29 @@ export default {
     --background-color: var(--finourson-background);
   }
 
+  &__container__border {
+    height:100%;
+    padding:20px;
+    background-image: var(--border-color);
+    transition: ease-in-out all 200ms;
+  }
+
   // Container
   &__container {
+    position: relative;
     height: 100%;
     background-color: white;
-    border: 20px solid;
-    border-image-slice: 1;
-    border-image-source: var(--border-color);
     padding-right: 60px;
     padding-left: 60px;
+    padding-top: 60px;
   }
 
   // Header
   &__header {
     display:flex;
     align-items: center;
+    margin-bottom: 50px;
+    // margin-top: 70px;
   }
 
   // Character
@@ -223,24 +267,25 @@ export default {
 
   // Title
   &__title-container{
-    margin-left:25px;
+    margin-left: 25px;
   }
 
   &__title,
   &__job {
     font-variant: small-caps;
-    letter-spacing: -0,02em;
+    letter-spacing: -0.02em;
     margin: 0;
-    line-height: 30px;
     font-weight: 700;
   }
 
   &__title {
-    font-size: 28px;
+    font-size: 29px;
+    line-height: 30px;
   }
 
   &__job {
-    font-size: 20px;
+    font-size: 24px;
+    color: var(--color-grey);
   }
 
   // Content
@@ -255,21 +300,36 @@ export default {
   &__quote {
     text-align:center;
     font-size: 30px;
+    margin-bottom: 50px;
   }
 
   // Colors
   &__color-primary {
     color: var(--color-primary);
+    transition: ease-in-out all 200ms;
   }
 
   &__color-secondary {
     color: var(--color-secondary);
+    transition: ease-in-out all 200ms;
   }
 
   &__author {
-    text-align:right;
+    text-align: right;
   }
 
+  // Footer
+  &__footer {
+    width: 100%;
+    text-align: center;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+  }
+
+  &__footer-logo {
+    height: 50px;
+  }
 }
 
 // commun
@@ -279,9 +339,9 @@ export default {
 }
 
 .button {
-  padding:10px;
+  padding:10px 20px;
   margin-top:10px;
-  background-color:orange;
-  border: solid black 2px;
+  background-color: var(--mentalion-primary);
+  border: none;
 }
 </style>

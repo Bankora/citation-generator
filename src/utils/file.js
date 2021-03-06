@@ -26,7 +26,7 @@ export function generateTextFile(character, quote, author) {
   return {
     ...formatTitle(character, author, 'txt'),
     content: new Blob(
-      [`${quote}\n${author}\n${character}`],
+      [`${quote}\n\n${author}\n\n${character}`],
       { type: 'text/plain;charset=utf-8' },
     ),
   };
