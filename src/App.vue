@@ -17,8 +17,8 @@
         <!-- QUOTE -->
         <div class="form-container">
           <label class="form-container__label" for="quote">Citation:</label>
-          <input
-            class="form-container__input"
+          <textarea
+            class="form-container__input form-container__textarea"
             v-model="quote"
             id="quote"
             type="text"
@@ -29,10 +29,10 @@
         <!-- CHARACTER -->
         <div class="form-container">
           <label class="form-container__label" for="character">Personnage:</label>
-          <select v-model="character" name="character" id="character">
-            <option value="Écochon">Écochon</option>
-            <option value="Mentalion">Mentalion</option>
-            <option value="Finourson">Finourson</option>
+          <select @input="onCharaterChange" name="character" id="character">
+            <option value="ecochon">Écochon</option>
+            <option value="mentalion">Mentalion</option>
+            <option value="finourson">Finourson</option>
           </select>
         </div>
 
@@ -44,20 +44,24 @@
     </form>
 
     <!-- RESULT -->
-    <div id="js-result" class="result">
-      <div class='toto'>
+    <div
+      id="js-result"
+      class="result"
+      :class="characterClassModifier"
+    >
+      <div class='result__container'>
         <div class="result__header">
           <div class="result__character-container">
-            <img class="result__character" src="./assets/characters/mentalion.svg"/>
+            <img class="result__character" :src="characterSelected.img"/>
             <img class="result__type" src="./assets/type/quote.svg">
           </div>
           <div class="result__title-container">
-            <h3 class="result__title">Les citations de Mentalion</h3>
-            <h3 class="result__job">Le Coach Mental</h3>
+            <h3 class="result__title">{{characterSelected.title}}</h3>
+            <h3 class="result__job">{{characterSelected.job}}</h3>
           </div>
         </div>
         <div class="result__quote-container">
-          <h1 class="result__quote">{{ quote }}</h1>
+          <p class="result__quote" v-html="quote" />
           <span class="result__author">{{ author }}</span>
         </div>
       </div>
@@ -69,20 +73,29 @@
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
 import { generateTextFile, generateJpgFile } from './utils/file';
+import { characterCollection } from './data/characterCollection';
 
 export default {
   name: 'App',
   data: () => ({
     author: 'Lorem ipsum',
-    quote: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer tempus aliquet.',
-    character: '',
-
+    quote: 'Lorem ipsum <span class="result__color-primary">dolor</span> sit amet, consectetur <span class="result__color-secondary">adipiscing elit</span>. Integer tempus aliquet.',
+    characterCollection,
+    characterSelected: characterCollection.ecochon,
   }),
+  computed: {
+    characterClassModifier() {
+      return `result--${this.characterSelected.id}`;
+    },
+  },
   methods: {
+    onCharaterChange(event) {
+      this.characterSelected = this.characterCollection[event.target.value];
+    },
     onSubmit() {
       // Generate text file
       const textFile = generateTextFile(
-        this.character,
+        this.characterSelected.id,
         this.quote,
         this.author,
       );
@@ -93,7 +106,7 @@ export default {
       html2canvas(document.getElementById('js-result')) // use ref
         .then((canvas) => {
           const jpgFile = generateJpgFile(
-            this.character,
+            this.characterSelected.id,
             this.quote,
             canvas,
           );
@@ -106,14 +119,9 @@ export default {
 </script>
 
 <style lang="scss">
-.container {
-  margin-top: 50px;
-  display:flex;
-}
-
 // form compoment
 .form {
-  width:50%;
+  width: 30%;
 
   &__content {
     width:300px;
@@ -134,24 +142,59 @@ export default {
 
   &__input {
     display: block;
-    width:100%;
-    padding:10px;
-    margin-top:10px;
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+  }
+
+  &__textarea {
+    height: 150px;
   }
 }
 
 // result compoment
 .result {
-  width: 1000px;
-  height: 1000px;
-  background-color: lightcoral;
-  padding: 30px;
-  position:relative;
+  --color-primary: var(--ecochon-primary);
+  --color-secondary: var(--ecochon-secondary);
+  --border-color: var(--ecochon-gradient);
+  --background-color: var(--ecochon-background);
 
-  .toto {
-    height: 100%; 
+  width: 700px;
+  height: 700px;
+  background-color: var(--background-color);
+  padding: 30px;
+  position: relative;
+
+  &--ecochon {
+    --color-primary: var(--ecochon-primary);
+    --color-secondary: var(--ecochon-secondary);
+    --border-color: var(--ecochon-gradient);
+    --background-color: var(--ecochon-background);
+  }
+
+  &--mentalion {
+    --color-primary: var(--mentalion-primary);
+    --color-secondary: var(--mentalion-secondary);
+    --border-color: var(--mentalion-gradient);
+    --background-color: var(--mentalion-background);
+  }
+
+  &--finourson {
+    --color-primary: var(--finourson-primary);
+    --color-secondary: var(--finourson-secondary);
+    --border-color: var(--finourson-gradient);
+    --background-color: var(--finourson-background);
+  }
+
+  // Container
+  &__container {
+    height: 100%;
     background-color: white;
-    border: 20px solid orange;
+    border: 20px solid;
+    border-image-slice: 1;
+    border-image-source: var(--border-color);
+    padding-right: 60px;
+    padding-left: 60px;
   }
 
   // Header
@@ -166,16 +209,16 @@ export default {
   }
 
   &__character  {
-    width:160px;
-    height:160px;
+    width: 110px;
+    height: 110px;
   }
 
   &__type {
     position: absolute;
     top: -28%;
     right: -30%;
-    width: 80px;
-    height: 80px;
+    width: 60px;
+    height: 60px;
   }
 
   // Title
@@ -193,11 +236,11 @@ export default {
   }
 
   &__title {
-    font-size: 35px;
+    font-size: 28px;
   }
 
   &__job {
-    font-size: 25px;
+    font-size: 20px;
   }
 
   // Content
@@ -211,11 +254,28 @@ export default {
 
   &__quote {
     text-align:center;
+    font-size: 30px;
+  }
+
+  // Colors
+  &__color-primary {
+    color: var(--color-primary);
+  }
+
+  &__color-secondary {
+    color: var(--color-secondary);
   }
 
   &__author {
     text-align:right;
   }
+
+}
+
+// commun
+.container {
+  margin-top: 50px;
+  display:flex;
 }
 
 .button {
