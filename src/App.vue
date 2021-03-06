@@ -127,14 +127,17 @@ export default {
   },
   mounted() {
     document.onkeyup = (e) => {
+      const selectedString = window.getSelection().toString();
       const CtrlM = e.ctrlKey && e.key === 'm';
       const CtrlN = e.ctrlKey && e.key === 'n';
+
+      console.log(selectedString);
 
       // primary color on CTRL + M
       if (CtrlM) {
         this.quote = this.quote.replace(
-          window.getSelection().toString(),
-          `<span class="result__color-primary">${window.getSelection().toString()}</span>`,
+          selectedString,
+          '<span class="result__color-primary">' + selectedString + '</span>',
         );
         return;
       }
@@ -142,8 +145,8 @@ export default {
       // secondary color  on CTRL + N
       if (CtrlN) {
         this.quote = this.quote.replace(
-          window.getSelection().toString(),
-          `<span class="result__color-secondary">${window.getSelection().toString()}</span>`,
+          selectedString,
+          '<span class="result__color-secondary">' + selectedString + '</span>',
         );
       }
     };
