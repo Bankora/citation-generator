@@ -54,8 +54,8 @@
         <div class='result__container'>
           <div class="result__header">
             <div class="result__character-container">
-              <img class="result__character" :src="characterSelected.img"/>
-              <img class="result__type" src="./assets/type/quote.svg">
+              <img alt='' class="result__character" :src="characterSelected.img"/>
+              <img alt='' class="result__type" src="./assets/type/quote.svg">
             </div>
             <div class="result__title-container">
               <h3 class="result__title">{{characterSelected.title}}</h3>
@@ -71,7 +71,7 @@
             <span class="result__author">{{ author }}</span>
           </div>
           <div class="result__footer">
-            <img class="result__footer-logo" src="./assets/bankora-logo.svg" />
+            <img alt='' class="result__footer-logo" src="./assets/bankora-logo.svg" />
           </div>
         </div>
       </div>
@@ -137,7 +137,7 @@ export default {
       if (CtrlM) {
         this.quote = this.quote.replace(
           selectedString,
-          '<span class="result__color-primary">' + selectedString + '</span>',
+          `<span class="result__color-primary">${selectedString}</span>`,
         );
         return;
       }
@@ -146,7 +146,7 @@ export default {
       if (CtrlN) {
         this.quote = this.quote.replace(
           selectedString,
-          '<span class="result__color-secondary">' + selectedString + '</span>',
+          `<span class="result__color-secondary">${selectedString}</span>`,
         );
       }
     };
