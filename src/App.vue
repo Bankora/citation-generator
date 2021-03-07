@@ -1,5 +1,9 @@
 <template>
-  <div style="min-height: 100%">
+  <div
+    class="app"
+    :class="`app--${characterSelected.id}`"
+    style="min-height: 100%"
+  >
     <bkr-navigation />
     <div class="container">
       <form class="form" @submit.prevent="onSubmit">
@@ -13,6 +17,16 @@
               id="quote"
               type="text"
               placeholder="Citation"
+            />
+            <button
+              class="form-container__color form-container__color--primary"
+              type="button"
+              @click="onClickColor('primary')"
+            />
+            <button
+              class="form-container__color form-container__color--secondary"
+              type="button"
+              @click="onClickColor('secondary')"
             />
           </div>
 
@@ -39,6 +53,7 @@
                   :class="{
                     'form-container__select-characters__button--current': character.id === currentCharacterId
                   }"
+                  :disabled="character.id === currentCharacterId"
                   @click="onCharaterChange(character.id)"
                   @keyup.enter="onCharaterChange(character.id)"
                   @keyup.space="onCharaterChange(character.id)"
@@ -66,7 +81,6 @@
       <!-- RESULT -->
       <div
         class="result"
-        :class="characterClassModifier"
         ref="result"
       >
         <div class="result__container__border">
@@ -119,9 +133,6 @@ export default {
     characterSelected: characterCollection.ecochon,
   }),
   computed: {
-    characterClassModifier() {
-      return `result--${this.currentCharacterId}`;
-    },
     currentCharacterId() {
       return this.characterSelected.id;
     },
@@ -152,6 +163,15 @@ export default {
           saveAs(jpgFile.content, jpgFile.title);
         });
     },
+    colorText(color, selectedString) {
+      this.quote = this.quote.replace(
+        selectedString,
+        `<span class="result__color-${color}">${selectedString}</span>`,
+      );
+    },
+    onClickColor(color) {
+      this.colorText(color, window.getSelection().toString());
+    },
   },
   mounted() {
     document.onkeyup = (e) => {
@@ -161,19 +181,13 @@ export default {
 
       // primary color on CTRL + M
       if (CtrlM) {
-        this.quote = this.quote.replace(
-          selectedString,
-          `<span class="result__color-primary">${selectedString}</span>`,
-        );
+        this.colorText('primary', selectedString);
         return;
       }
 
       // secondary color  on CTRL + N
       if (CtrlN) {
-        this.quote = this.quote.replace(
-          selectedString,
-          `<span class="result__color-secondary">${selectedString}</span>`,
-        );
+        this.colorText('secondary', selectedString);
       }
     };
   },
@@ -181,6 +195,34 @@ export default {
 </script>
 
 <style lang="scss">
+.app {
+  --color-primary: var(--ecochon-primary);
+  --color-secondary: var(--ecochon-secondary);
+  --border-color: var(--ecochon-gradient);
+  --background-color: var(--ecochon-background);
+
+  &--ecochon {
+    --color-primary: var(--ecochon-primary);
+    --color-secondary: var(--ecochon-secondary);
+    --border-color: var(--ecochon-gradient);
+    --background-color: var(--ecochon-background);
+  }
+
+  &--mentalion {
+    --color-primary: var(--mentalion-primary);
+    --color-secondary: var(--mentalion-secondary);
+    --border-color: var(--mentalion-gradient);
+    --background-color: var(--mentalion-background);
+  }
+
+  &--finourson {
+    --color-primary: var(--finourson-primary);
+    --color-secondary: var(--finourson-secondary);
+    --border-color: var(--finourson-gradient);
+    --background-color: var(--finourson-background);
+  }
+}
+
 // form compoment
 .form {
   width: 40%;
@@ -218,10 +260,29 @@ export default {
     border-radius: 4px;
   }
 
+  &__color {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 8px;
+    margin-top: 8px;
+    margin-right: 8px;
+    cursor: pointer;
+
+    &--primary {
+      background-color: var(--color-primary);
+    }
+
+    &--secondary {
+      background-color: var(--color-secondary);
+    }
+  }
+
   &__textarea {
     height: 150px;
   }
 
+  // Select character
   &__select-characters {
     display: flex;
     list-style: none;
@@ -240,12 +301,14 @@ export default {
       cursor: pointer;
       transition: transform 200ms ease-in-out;
 
-      &:hover {
+      &:not(.form-container__select-characters__button--current):hover {
         transform: translateY(-5px);
       }
 
       &--current {
-        border-color: var(--finourson-primary);
+        cursor: default;
+        box-shadow: 0 0 0 2px var(--color-primary);
+        transform: translateY(-5px);
       }
     }
 
@@ -257,39 +320,12 @@ export default {
 
 // result compoment
 .result {
-  --color-primary: var(--ecochon-primary);
-  --color-secondary: var(--ecochon-secondary);
-  --border-color: var(--ecochon-gradient);
-  --background-color: var(--ecochon-background);
-
   width: 700px;
   height: 700px;
   background-color: var(--background-color);
   padding: 30px;
   position: relative;
   transition: ease-in-out all 200ms;
-
-  // .result--ecochon
-  &--ecochon {
-    --color-primary: var(--ecochon-primary);
-    --color-secondary: var(--ecochon-secondary);
-    --border-color: var(--ecochon-gradient);
-    --background-color: var(--ecochon-background);
-  }
-
-  &--mentalion {
-    --color-primary: var(--mentalion-primary);
-    --color-secondary: var(--mentalion-secondary);
-    --border-color: var(--mentalion-gradient);
-    --background-color: var(--mentalion-background);
-  }
-
-  &--finourson {
-    --color-primary: var(--finourson-primary);
-    --color-secondary: var(--finourson-secondary);
-    --border-color: var(--finourson-gradient);
-    --background-color: var(--finourson-background);
-  }
 
   &__container__border {
     height:100%;
@@ -417,7 +453,7 @@ export default {
 
 .button {
   padding:10px 20px;
-  background-color: var(--finourson-primary);
+  background-color: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
