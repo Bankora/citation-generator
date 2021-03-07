@@ -4,18 +4,6 @@
     <div class="container">
       <form class="form" @submit.prevent="onSubmit">
         <div class="form__content">
-          <!-- AUTHOR -->
-          <div class="form-container">
-            <label class="form-container__label" for="author">Auteur:</label>
-            <input
-              class="form-container__input"
-              v-model="author"
-              id="author"
-              type="text"
-              placeholder="Auteur"
-            />
-          </div>
-
           <!-- QUOTE -->
           <div class="form-container">
             <label class="form-container__label" for="quote">Citation:</label>
@@ -25,6 +13,18 @@
               id="quote"
               type="text"
               placeholder="Citation"
+            />
+          </div>
+
+          <!-- AUTHOR -->
+          <div class="form-container">
+            <label class="form-container__label" for="author">Auteur:</label>
+            <input
+              class="form-container__input"
+              v-model="author"
+              id="author"
+              type="text"
+              placeholder="Auteur"
             />
           </div>
 
@@ -54,6 +54,9 @@
           </div>
 
           <!-- SUBMIT -->
+          <a class="submit-link" target="_blank" href="https://www.notion.so/vincentbattez/45accccdf86d479fa670dd39686825f4?v=bb16af1e80984d5b9027aad2b5a1a85b">
+            Notion
+          </a>
           <button class="button" type="submit">
             Go
           </button>
@@ -311,6 +314,7 @@ export default {
   // Header
   &__header {
     display:flex;
+    width: 100%;
     align-items: center;
   }
 
@@ -418,5 +422,10 @@ export default {
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.submit-link {
+  margin-right: 16px;
+  text-decoration: underline;
 }
 </style>
