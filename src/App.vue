@@ -297,7 +297,10 @@ export default {
 
   // Container
   &__container {
-    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
     height: 100%;
     background-color: white;
     padding-right: 60px;
@@ -309,8 +312,6 @@ export default {
   &__header {
     display:flex;
     align-items: center;
-    margin-bottom: 50px;
-    // margin-top: 70px;
   }
 
   // Character
@@ -349,6 +350,7 @@ export default {
     line-height: 30px;
   }
 
+  // Job
   &__job {
     font-size: 24px;
     color: var(--color-grey);
@@ -358,9 +360,13 @@ export default {
   &__quote,
   &__author {
     display:block;
-    // line-height: 30px;
     margin: 0;
     font-weight: 700;
+  }
+
+  // Quote
+  &__quote-container {
+    width: 100%;
   }
 
   &__quote {
@@ -380,6 +386,7 @@ export default {
     transition: ease-in-out all 200ms;
   }
 
+  // Author
   &__author {
     text-align: right;
   }
@@ -388,11 +395,10 @@ export default {
   &__footer {
     width: 100%;
     text-align: center;
-    position: absolute;
-    bottom: 10px;
-    left: 0;
+    margin-bottom: 10px;
   }
 
+  // Logo
   &__footer-logo {
     height: 50px;
   }

@@ -3,7 +3,7 @@ export const characterCollection = {
   ecochon: {
     id: 'ecochon',
     name: 'Écochon',
-    title: 'Les citations d’écochon',
+    title: 'Les citations d’Écochon',
     job: 'Le maître de l’épargne',
     img: require('@/assets/characters/ecochon.svg'),
   },
@@ -11,7 +11,7 @@ export const characterCollection = {
     id: 'mentalion',
     name: 'Mentalion',
     title: 'Les citations de Mentalion',
-    job: 'Le Coach Mental',
+    job: 'Le coach mental',
     img: require('@/assets/characters/mentalion.svg'),
   },
   finourson: {
