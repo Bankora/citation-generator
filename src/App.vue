@@ -1,77 +1,94 @@
 <template>
-  <div class="container">
-    <form class="form" @submit.prevent="onSubmit">
-      <div class="form__content">
-        <!-- AUTHOR -->
-        <div class="form-container">
-          <label class="form-container__label" for="author">author:</label>
-          <input
-            class="form-container__input"
-            v-model="author"
-            id="author"
-            type="text"
-            placeholder="Auteur"
-          />
-        </div>
-
-        <!-- QUOTE -->
-        <div class="form-container">
-          <label class="form-container__label" for="quote">Citation:</label>
-          <textarea
-            class="form-container__input form-container__textarea"
-            v-model="quote"
-            id="quote"
-            type="text"
-            placeholder="Citation"
-          />
-        </div>
-
-        <!-- CHARACTER -->
-        <div class="form-container">
-          <label class="form-container__label" for="character">Personnage:</label>
-          <select @input="onCharaterChange" name="character" id="character">
-            <!-- @refactor: transformer ces 3 options en options dynamique  -->
-            <option value="ecochon">Écochon</option>
-            <option value="mentalion">Mentalion</option>
-            <option value="finourson">Finourson</option>
-          </select>
-        </div>
-
-        <!-- SUBMIT -->
-        <button class="button" type="submit">
-          Go
-        </button>
-      </div>
-    </form>
-
-    <!-- RESULT -->
-    <div
-      class="result"
-      :class="characterClassModifier"
-      ref="result"
-    >
-      <div class="result__container__border">
-        <div class='result__container'>
-          <div class="result__header">
-            <div class="result__character-container">
-              <img alt='' class="result__character" :src="characterSelected.img"/>
-              <img alt='' class="result__type" src="./assets/type/quote.svg">
-            </div>
-            <div class="result__title-container">
-              <h3 class="result__title">{{characterSelected.title}}</h3>
-              <h3 class="result__job">{{characterSelected.job}}</h3>
-            </div>
-          </div>
-          <div class="result__quote-container">
-            <p
-              class="result__quote"
-              v-html="quote"
-              ref="resultQuote"
+  <div style="min-height: 100%">
+    <bkr-navigation />
+    <div class="container">
+      <form class="form" @submit.prevent="onSubmit">
+        <div class="form__content">
+          <!-- AUTHOR -->
+          <div class="form-container">
+            <label class="form-container__label" for="author">Auteur:</label>
+            <input
+              class="form-container__input"
+              v-model="author"
+              id="author"
+              type="text"
+              placeholder="Auteur"
             />
-            <span class="result__author">{{ author }}</span>
           </div>
-          <div class="result__footer">
-            <img alt='' class="result__footer-logo" src="./assets/bankora-logo.svg" />
+
+          <!-- QUOTE -->
+          <div class="form-container">
+            <label class="form-container__label" for="quote">Citation:</label>
+            <textarea
+              class="form-container__input form-container__textarea"
+              v-model="quote"
+              id="quote"
+              type="text"
+              placeholder="Citation"
+            />
+          </div>
+
+          <!-- CHARACTER -->
+          <div class="form-container">
+            <label class="form-container__label" for="character">Personnage:</label>
+            <ul class='form-container__select-characters'>
+              <li v-for="character in characterCollection" :key="character.id">
+                <button
+                  type="button"
+                  class='form-container__select-characters__button'
+                  :class="{
+                    'form-container__select-characters__button--current': character.id === currentCharacterId
+                  }"
+                  @click="onCharaterChange(character.id)"
+                  @keyup.enter="onCharaterChange(character.id)"
+                  @keyup.space="onCharaterChange(character.id)"
+                >
+                  <img
+                    class='form-container__select-characters__image'
+                    :src="character.img"
+                    :alt="character.id"
+                  />
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- SUBMIT -->
+          <button class="button" type="submit">
+            Go
+          </button>
+        </div>
+      </form>
+
+      <!-- RESULT -->
+      <div
+        class="result"
+        :class="characterClassModifier"
+        ref="result"
+      >
+        <div class="result__container__border">
+          <div class='result__container'>
+            <div class="result__header">
+              <div class="result__character-container">
+                <img alt='' class="result__character" :src="characterSelected.img"/>
+                <img alt='' class="result__type" src="./assets/type/quote.svg">
+              </div>
+              <div class="result__title-container">
+                <h3 class="result__title">{{characterSelected.title}}</h3>
+                <h3 class="result__job">{{characterSelected.job}}</h3>
+              </div>
+            </div>
+            <div class="result__quote-container">
+              <p
+                class="result__quote"
+                v-html="quote"
+                ref="resultQuote"
+              />
+              <span class="result__author">{{ author }}</span>
+            </div>
+            <div class="result__footer">
+              <img alt='' class="result__footer-logo" src="./assets/bankora-logo.svg" />
+            </div>
           </div>
         </div>
       </div>
@@ -82,25 +99,33 @@
 <script>
 import html2canvas from 'html2canvas';
 import { saveAs } from 'file-saver';
-import { generateTextFile, generateJpgFile } from './utils/file';
-import { characterCollection } from './data/characterCollection';
+
+import BkrNavigation from '@/components/BkrNavigation.vue';
+import { generateTextFile, generateJpgFile } from '@/utils/file';
+import { characterCollection } from '@/data/characterCollection';
 
 export default {
   name: 'App',
+  components: {
+    BkrNavigation,
+  },
   data: () => ({
-    author: 'Lorem ipsum',
-    quote: 'Lorem ipsum <span class="result__color-primary">dolor</span> sit amet, consectetur <span class="result__color-secondary">adipiscing elit</span>. Integer tempus aliquet.',
+    author: 'What the cut',
+    quote: 'My life is <span class="result__color-primary">Banana</span>',
     characterCollection,
     characterSelected: characterCollection.ecochon,
   }),
   computed: {
     characterClassModifier() {
-      return `result--${this.characterSelected.id}`;
+      return `result--${this.currentCharacterId}`;
+    },
+    currentCharacterId() {
+      return this.characterSelected.id;
     },
   },
   methods: {
-    onCharaterChange(event) {
-      this.characterSelected = this.characterCollection[event.target.value];
+    onCharaterChange(characterId) {
+      this.characterSelected = this.characterCollection[characterId];
     },
     onSubmit() {
       // Generate text file
@@ -130,8 +155,6 @@ export default {
       const selectedString = window.getSelection().toString();
       const CtrlM = e.ctrlKey && e.key === 'm';
       const CtrlN = e.ctrlKey && e.key === 'n';
-
-      console.log(selectedString);
 
       // primary color on CTRL + M
       if (CtrlM) {
@@ -173,7 +196,13 @@ export default {
   margin-left: auto;
   margin-right: auto;
 
+  &:not(:last-of-type) {
+    margin-bottom: 16px;
+  }
+
   &__label {
+    font-size: 18px;
+    font-weight: bold;
     margin-top:10px;
   }
 
@@ -182,10 +211,44 @@ export default {
     width: 100%;
     padding: 10px;
     margin-top: 10px;
+    border: none;
+    border-radius: 4px;
   }
 
   &__textarea {
     height: 150px;
+  }
+
+  &__select-characters {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
+
+    li:not(:last-child) {
+      margin-right: 16px;
+    }
+
+    &__button {
+      background: white;
+      border: 3px solid transparent;
+      border-radius: 8px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: transform 200ms ease-in-out;
+
+      &:hover {
+        transform: translateY(-5px);
+      }
+
+      &--current {
+        border-color: var(--finourson-primary);
+      }
+    }
+
+    &__image {
+      width: 109px;
+    }
   }
 }
 
@@ -337,14 +400,17 @@ export default {
 
 // commun
 .container {
-  margin-top: 50px;
   display:flex;
+  min-height: 100%;
+  padding-top: 50px;
 }
 
 .button {
   padding:10px 20px;
-  margin-top:10px;
-  background-color: var(--mentalion-primary);
+  background-color: var(--finourson-primary);
+  color: white;
   border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 </style>

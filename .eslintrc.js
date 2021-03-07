@@ -16,5 +16,7 @@ module.exports = {
     'global-require': 0,
     'import/no-default-export': 'off',
     'import/prefer-default-export': 'off',
+    'linebreak-style': 0,
+    'max-len': ["error", { "code": 160 }]
   },
 };
