@@ -17,6 +17,6 @@ module.exports = {
     'import/no-default-export': 'off',
     'import/prefer-default-export': 'off',
     'linebreak-style': 0,
-    'max-len': ["error", { "code": 160 }]
+    'max-len': ["error", { "code": 170 }]
   },
 };

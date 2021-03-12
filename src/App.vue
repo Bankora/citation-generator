@@ -18,14 +18,18 @@
               type="text"
               placeholder="Citation"
             />
+
+            <!-- Colors -->
             <button
               class="form-container__color form-container__color--primary"
               type="button"
+              title="CTRL + M"
               @click="onClickColor('primary')"
             />
             <button
               class="form-container__color form-container__color--secondary"
               type="button"
+              title="CTRL + N"
               @click="onClickColor('secondary')"
             />
           </div>
@@ -44,7 +48,7 @@
 
           <!-- CHARACTER -->
           <div class="form-container">
-            <label class="form-container__label" for="character">Personnage:</label>
+            <label class="form-container__label">Personnage:</label>
             <ul class='form-container__select-characters'>
               <li v-for="character in characterCollection" :key="character.id">
                 <button
@@ -69,12 +73,16 @@
           </div>
 
           <!-- SUBMIT -->
-          <a class="submit-link" target="_blank" href="https://www.notion.so/vincentbattez/45accccdf86d479fa670dd39686825f4?v=bb16af1e80984d5b9027aad2b5a1a85b">
+          <a
+            @click.prevent="onNotionClick"
+            class="submit-link"
+            target="_blank"
+            href="https://www.notion.so/vincentbattez/45accccdf86d479fa670dd39686825f4?v=bb16af1e80984d5b9027aad2b5a1a85b"
+          >
             Notion
           </a>
-          <button class="button" type="submit">
-            Go
-          </button>
+          <a class="submit-link" target="_blank" href="https://app.later.com/52YNT/schedule/calendar?calendarView=month">Publier</a>
+          <button class="button" type="submit">Générer</button>
         </div>
       </form>
 
@@ -127,8 +135,8 @@ export default {
     BkrNavigation,
   },
   data: () => ({
-    author: 'What the cut',
-    quote: 'My life is <span class="result__color-primary">Banana</span>',
+    author: 'Jim Ryun',
+    quote: '<span class="result__color-secondary">La motivation</span> vous sert de départ. <span class="result__color-primary">L\'habitude</span> vous fait continuer ',
     characterCollection,
     characterSelected: characterCollection.ecochon,
   }),
@@ -163,33 +171,39 @@ export default {
           saveAs(jpgFile.content, jpgFile.title);
         });
     },
-    colorText(color, selectedString) {
+    onClickColor(color) {
+      this.insertColorSpan(color, window.getSelection().toString());
+    },
+    onNotionClick() {
+      // copy the quote to clipboard
+      navigator.clipboard.writeText(this.$refs.resultQuote.textContent).then(() => {
+        console.log('Async: Copying to clipboard was successful!');
+        window.open('https://www.notion.so/vincentbattez/45accccdf86d479fa670dd39686825f4?v=bb16af1e80984d5b9027aad2b5a1a85b', '_blank');
+      }, (err) => {
+        console.error('Async: Could not copy text: ', err);
+      });
+    },
+    insertColorSpan(color, selectedString) {
       this.quote = this.quote.replace(
         selectedString,
         `<span class="result__color-${color}">${selectedString}</span>`,
       );
     },
-    onClickColor(color) {
-      this.colorText(color, window.getSelection().toString());
+    initShortcut() {
+      document.onkeyup = (e) => {
+        if (e.ctrlKey && e.key === 'm') {
+          this.insertColorSpan('primary', window.getSelection().toString());
+          return;
+        }
+
+        if (e.ctrlKey && e.key === 'n') {
+          this.insertColorSpan('secondary', window.getSelection().toString());
+        }
+      };
     },
   },
   mounted() {
-    document.onkeyup = (e) => {
-      const selectedString = window.getSelection().toString();
-      const CtrlM = e.ctrlKey && e.key === 'm';
-      const CtrlN = e.ctrlKey && e.key === 'n';
-
-      // primary color on CTRL + M
-      if (CtrlM) {
-        this.colorText('primary', selectedString);
-        return;
-      }
-
-      // secondary color  on CTRL + N
-      if (CtrlN) {
-        this.colorText('secondary', selectedString);
-      }
-    };
+    this.initShortcut();
   },
 };
 </script>
@@ -386,13 +400,14 @@ export default {
   }
 
   &__title {
-    font-size: 29px;
+    white-space: nowrap;
+    font-size: 32px;
     line-height: 30px;
   }
 
   // Job
   &__job {
-    font-size: 24px;
+    font-size: 28px;
     color: var(--color-grey);
   }
 
@@ -413,6 +428,7 @@ export default {
     text-align:center;
     font-size: 30px;
     margin-bottom: 50px;
+    line-height: 40px;
   }
 
   // Colors
